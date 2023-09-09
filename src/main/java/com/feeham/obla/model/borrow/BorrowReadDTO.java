@@ -1,4 +1,4 @@
-package com.feeham.obla.model;
+package com.feeham.obla.model.borrow;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

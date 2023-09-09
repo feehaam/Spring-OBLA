@@ -1,4 +1,5 @@
-package com.feeham.obla.model;
+package com.feeham.obla.model.borrow;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,9 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BorrowCreateDTO {
+public class BorrowUpdateDTO {
     private Long borrowId;
-    private Date dueDate;
-    private Long userId;
-    private Long bookId;
+    private Date returnDate;
 }

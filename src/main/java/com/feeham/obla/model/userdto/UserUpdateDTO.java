@@ -1,5 +1,5 @@
-package com.feeham.obla.model;
-import com.feeham.obla.entity.Role;
+package com.feeham.obla.model.userdto;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,11 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserReadDTO {
+public class UserUpdateDTO {
     private Long userId;
     private String firstName;
     private String lastName;
-    private String email;
+    private String password;
     private String address;
-    private Role role;
+    private String role;
 }

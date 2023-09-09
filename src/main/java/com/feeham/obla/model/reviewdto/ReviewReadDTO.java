@@ -1,4 +1,4 @@
-package com.feeham.obla.model;
+package com.feeham.obla.model.reviewdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

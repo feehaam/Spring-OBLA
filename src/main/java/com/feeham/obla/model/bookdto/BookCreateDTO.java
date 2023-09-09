@@ -1,19 +1,15 @@
-package com.feeham.obla.model;
-import com.feeham.obla.entity.Review;
+package com.feeham.obla.model.bookdto;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BookReadDTO {
-    private Long bookId;
+public class BookCreateDTO {
     private String title;
     private String author;
     private String isbn;
     private String description;
-    private Boolean availability;
-    private List<Review> reviews;
 }
