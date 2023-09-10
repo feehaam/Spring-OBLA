@@ -12,6 +12,6 @@ public class ErrorResponse {
     private String exception;
     private String operation;
     private String message;
-    private String reason;
+    private Object cause;
     private HttpStatus status;
 }
