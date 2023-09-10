@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoginResponse {
+public class LoginResponseModel {
     private String userId;
     private String username;
     private String bearerToken;

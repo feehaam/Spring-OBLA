@@ -37,9 +37,9 @@ public class Book {
     private Boolean archived;
 
     // Reference properties
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Borrow> borrows;
 }
