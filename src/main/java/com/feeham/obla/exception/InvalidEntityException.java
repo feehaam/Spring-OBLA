@@ -10,8 +10,8 @@ public class InvalidEntityException extends RuntimeException {
     private final String operation;
     private final String message;
     private final Object validation;
-    public InvalidEntityException(String model1, String model2, String message, Object validattion) {
-        operation = "Conversion between "+model1+" & "+model2;
+    public InvalidEntityException(String entityName, String message, Object validattion) {
+        operation = "The entity '" + entityName + "' is invalid";
         this.message = message;
         this.validation = validattion;
     }

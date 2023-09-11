@@ -30,11 +30,11 @@ public class GlobalExceptionHandler {
                 "Null pointer reference", "Null value could not be referenced", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> exceptionParent(Exception exception) {
-        return new ResponseEntity<>(new ErrorResponse("Exception", "Failed to perform operation",
-                "Uncaught error", "Unknown", HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> exceptionParent(Exception exception) {
+//        return new ResponseEntity<>(new ErrorResponse("Exception", "Failed to perform operation",
+//                "Uncaught error", "Unknown", HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     private ResponseEntity<?> generateResponse(CustomException exception, HttpStatus status){
         return new ResponseEntity<>(new ErrorResponse(exception.getException(), exception.getMessage(),

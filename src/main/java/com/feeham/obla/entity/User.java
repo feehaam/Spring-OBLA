@@ -37,8 +37,8 @@ public class User {
     private boolean archived;
 
     // Relational properties
-    @OneToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

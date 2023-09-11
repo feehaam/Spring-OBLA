@@ -8,9 +8,9 @@ import com.feeham.obla.model.reviewdto.ReviewUpdateDTO;
 import java.util.List;
 
 public interface ReviewService {
-    public void create(ReviewCreateDTO reviewCreateDTO) throws ModelMappingException, InvalidEntityException, DatabaseException;
-    public ReviewReadDTO readById(Long reviewId) throws ModelMappingException, DatabaseException, ReviewNotFoundException;
-    public List<ReviewReadDTO> readAll() throws ModelMappingException, DatabaseException;
-    public void update(ReviewUpdateDTO reviewUpdateDTO) throws ModelMappingException, InvalidEntityException, ReviewNotFoundException, DatabaseException;
-    public void delete(Long reviewId) throws ReviewNotFoundException, DatabaseException;
+    public void create(ReviewCreateDTO reviewCreateDTO) throws ModelMappingException, InvalidEntityException;
+    public ReviewReadDTO readById(Long reviewId) throws ModelMappingException, ReviewNotFoundException;
+    public List<ReviewReadDTO> readAll() throws ModelMappingException;
+    public void update(ReviewUpdateDTO reviewUpdateDTO) throws ModelMappingException, InvalidEntityException, ReviewNotFoundException;
+    public void delete(Long reviewId) throws ReviewNotFoundException;
 }
