@@ -28,10 +28,11 @@ public class ReviewValidator {
         }
     }
 
-    private void validateRating(double rating, List<String> violations) {
+    private void validateRating(Integer rating, List<String> violations) {
         if (rating < 1 || rating > 5) {
             violations.add(RULES.get(0));
         }
+
     }
 
     private Map<String, List<String>> createValidationData(List<String> violations) {

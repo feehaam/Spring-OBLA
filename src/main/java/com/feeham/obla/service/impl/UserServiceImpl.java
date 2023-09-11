@@ -3,6 +3,8 @@ package com.feeham.obla.service.impl;
 import com.feeham.obla.entity.Role;
 import com.feeham.obla.entity.User;
 import com.feeham.obla.exception.CustomException;
+import com.feeham.obla.exception.InvalidEntityException;
+import com.feeham.obla.exception.ModelMappingException;
 import com.feeham.obla.exception.UserNotFoundException;
 import com.feeham.obla.model.userdto.UserCreateDTO;
 import com.feeham.obla.model.userdto.UserReadDTO;
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(UserCreateDTO userCreateDTO) {
+    public void create(UserCreateDTO userCreateDTO)  throws ModelMappingException, InvalidEntityException {
         Optional<User> userOptional = userRepository.findByEmail(userCreateDTO.getEmail());
         if(userOptional.isPresent()) {
             throw new CustomException("DuplicateEntityException", "Can not create new account",
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserEntityByEmail(String email) {
+    public User getUserEntityByEmail(String email)  throws ModelMappingException, UserNotFoundException{
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(userOptional.isEmpty()){
             throw new UserNotFoundException("User with email " + email + " not found.", "Searching for user by username",
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserReadDTO readById(Long userId) {
+    public UserReadDTO readById(Long userId)  throws ModelMappingException, UserNotFoundException{
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isEmpty()){
             throw new UserNotFoundException("User with id " + userId + " not found.", "Searching for user by id",
@@ -66,12 +68,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserReadDTO readByEmail(String email) {
+    public UserReadDTO readByEmail(String email)  throws ModelMappingException, UserNotFoundException{
         return modelMapper.map(getUserEntityByEmail(email), UserReadDTO.class);
     }
 
     @Override
-    public List<UserReadDTO> readAll() {
+    public List<UserReadDTO> readAll()  throws ModelMappingException{
         List<User> users = userRepository.findAll();
         return users.stream()
                 .map(user -> modelMapper.map(user, UserReadDTO.class))
@@ -79,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserUpdateDTO userUpdateDTO) {
+    public void update(UserUpdateDTO userUpdateDTO)  throws ModelMappingException, InvalidEntityException, UserNotFoundException{
         Long userId = userUpdateDTO.getUserId();
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -98,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long userId) {
+    public void delete(Long userId) throws UserNotFoundException{
         readById(userId);
         userRepository.deleteById(userId);
     }

@@ -2,13 +2,13 @@ package com.feeham.obla.model.reviewdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ReviewUpdateDTO {
-    private Long reviewId;
-    private double rating;
+    private Integer rating;
     private String comment;
 }

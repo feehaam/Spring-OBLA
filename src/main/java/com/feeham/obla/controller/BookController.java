@@ -2,19 +2,30 @@ package com.feeham.obla.controller;
 
 import com.feeham.obla.model.bookdto.BookCreateDTO;
 import com.feeham.obla.model.bookdto.BookUpdateDTO;
+import com.feeham.obla.service.interfaces.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class BookController {
+
+    private final BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @PostMapping("/books/create")
     public ResponseEntity<?> createBook(@RequestBody BookCreateDTO bookCreateDTO){
-        return ResponseEntity.ok(bookCreateDTO);
+        bookService.create(bookCreateDTO);
+        return ResponseEntity.ok("New book created.");
     }
 
     @PutMapping("/books/update/{bookId}")
     public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateDTO bookUpdateDTO){
-        return ResponseEntity.ok(bookUpdateDTO);
+        bookUpdateDTO.setBookId(bookId);
+        bookService.update(bookUpdateDTO);
+        return ResponseEntity.ok("Book updated successfully.");
     }
 
     @DeleteMapping("/books/delete/{bookId}")
@@ -24,11 +35,11 @@ public class BookController {
 
     @GetMapping("/books/all")
     public ResponseEntity<?> getAllBooks(){
-        return ResponseEntity.ok("All Books");
+        return ResponseEntity.ok(bookService.readAll());
     }
 
     @GetMapping("/books/{bookId}")
     public ResponseEntity<?> getBookById(@PathVariable Long bookId){
-        return ResponseEntity.ok(bookId);
+        return ResponseEntity.ok(bookService.readById(bookId));
     }
 }

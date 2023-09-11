@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserCreateDTO {
     private String firstName;
     private String lastName;

@@ -2,11 +2,12 @@ package com.feeham.obla.model.userdto;
 import com.feeham.obla.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserReadDTO {
     private Long userId;
     private String firstName;

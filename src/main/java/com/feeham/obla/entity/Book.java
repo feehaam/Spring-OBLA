@@ -27,7 +27,7 @@ public class Book {
     @Column(name = "isbn")
     private String isbn;
 
-    @Column(name = "description", length = 500)
+    @Column(name = "description", length = 1000)
     private String description;
 
     @Column(name = "availability")

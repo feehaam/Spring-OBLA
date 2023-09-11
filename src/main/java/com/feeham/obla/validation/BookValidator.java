@@ -18,6 +18,7 @@ public class BookValidator {
         RULES.add("- The author's name must be at least 4 letters long");
         RULES.add("- ISBN must not be null");
         RULES.add("- Description must be at least 10 letters long");
+        RULES.add("- Description must be withing 1000 characters");
     }
 
     public void validate(Book book) {
@@ -61,6 +62,9 @@ public class BookValidator {
     private void validateDescription(String description, List<String> violations) {
         if (description == null || description.length() < 10) {
             violations.add(RULES.get(4));
+        }
+        if((description != null) && (description.length() > 1000)){
+            violations.add(RULES.get(5));
         }
     }
 

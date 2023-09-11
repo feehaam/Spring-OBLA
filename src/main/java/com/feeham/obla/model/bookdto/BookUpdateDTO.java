@@ -11,6 +11,5 @@ public class BookUpdateDTO {
     private Long bookId;
     private String title;
     private String author;
-    private String isbn;
     private String description;
 }
