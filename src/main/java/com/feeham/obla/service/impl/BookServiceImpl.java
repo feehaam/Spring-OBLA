@@ -83,6 +83,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(Long bookId) throws BookNotFoundException {
-
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if(bookOptional.isEmpty()){
+            throw new BookNotFoundException("Book not found", "Delete book", "Book with ID " + bookId + " doesn't exist.");
+        }
+        Book book = bookOptional.get();
+        if(!book.getAvailability()) {
+            throw new BookNotFoundException("Book not found", "Delete book", "Book with ID " + bookId + " is taken.");
+        }
+        book.setArchived(true);
+        bookRepository.save(book);
     }
 }

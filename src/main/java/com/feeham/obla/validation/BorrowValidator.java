@@ -4,6 +4,7 @@ import com.feeham.obla.entity.Borrow;
 import com.feeham.obla.exception.InvalidEntityException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,14 +30,15 @@ public class BorrowValidator {
         }
     }
 
-    private void validateDueDate(Date dueDate, List<String> violations) {
-        if (dueDate == null || dueDate.before(new Date())) {
+    private void validateDueDate(LocalDate dueDate, List<String> violations) {
+        LocalDate currentDate = LocalDate.now();
+        if (dueDate == null || dueDate.isBefore(currentDate)) {
             violations.add(RULES.get(0));
         }
     }
 
-    private void validateReturnDate(Date dueDate, Date returnDate, List<String> violations) {
-        if (returnDate != null && returnDate.before(dueDate)) {
+    private void validateReturnDate(LocalDate dueDate, LocalDate returnDate, List<String> violations) {
+        if (returnDate != null && returnDate.isBefore(dueDate)) {
             violations.add(RULES.get(1));
         }
     }

@@ -38,8 +38,9 @@ public class BookController {
         return ResponseEntity.ok(bookService.readAll());
     }
 
-    @GetMapping("/books/{bookId}")
-    public ResponseEntity<?> getBookById(@PathVariable Long bookId){
-        return ResponseEntity.ok(bookService.readById(bookId));
+    @DeleteMapping("/books/delete")
+    public ResponseEntity<?> getBookById(@RequestBody Long bookId){
+        bookService.delete(bookId);
+        return ResponseEntity.ok("Book deleted successfully.");
     }
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -19,10 +20,10 @@ public class Borrow {
     private Long borrowId;
 
     @Column(name = "due_date", nullable = false, updatable = false)
-    private Date dueDate;
+    private LocalDate dueDate;
 
     @Column(name = "return_date")
-    private Date returnDate;
+    private LocalDate returnDate;
 
 
     /*
