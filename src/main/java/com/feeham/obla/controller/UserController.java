@@ -34,23 +34,22 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}/books")
-    public ResponseEntity<?> getBooksBorrowedByUser(@PathVariable Long userId){
-        return ResponseEntity.ok(userId);
+    public ResponseEntity<?> getBorrowedBooks(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getBorrowed(userId));
     }
 
     @GetMapping("/users/{userId}/borrowed-books")
-    public ResponseEntity<?> getBooksBorrowedCurrentlyByUser(@PathVariable Long userId){
-        return ResponseEntity.ok(userId);
+    public ResponseEntity<?> getBorrowedBooksCurrent(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getBorrowedCurrently(userId));
     }
 
     // Optional
     @GetMapping("/users/{userId}/history")
-    public ResponseEntity<?> getUserBorrowingHistory(@PathVariable Long userId){
-        return ResponseEntity.ok(userId);
+    public ResponseEntity<?> getHistory(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getHistory(userId));
     }
 
     // Partial
-
     @PutMapping("/user/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO){
         userUpdateDTO.setUserId(userId);
