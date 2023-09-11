@@ -4,6 +4,7 @@ import com.feeham.obla.entity.User;
 import com.feeham.obla.exception.InvalidEntityException;
 import com.feeham.obla.exception.ModelMappingException;
 import com.feeham.obla.exception.UserNotFoundException;
+import com.feeham.obla.model.borrow.BorrowReadDTO;
 import com.feeham.obla.model.userdto.UserCreateDTO;
 import com.feeham.obla.model.userdto.UserReadDTO;
 import com.feeham.obla.model.userdto.UserUpdateDTO;
@@ -18,4 +19,7 @@ public interface UserService {
     public List<UserReadDTO> readAll() throws ModelMappingException;
     public void update(UserUpdateDTO userUpdateDTO) throws ModelMappingException, InvalidEntityException, UserNotFoundException;
     public void delete(Long userId) throws UserNotFoundException;
+    public List<String> getBorrowed(Long userId) throws UserNotFoundException;
+    public List<String> getBorrowedCurrently(Long userId) throws UserNotFoundException;
+    public List<BorrowReadDTO> getHistory(Long userId) throws UserNotFoundException;
 }

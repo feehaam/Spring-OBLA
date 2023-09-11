@@ -6,6 +6,7 @@ import com.feeham.obla.exception.CustomException;
 import com.feeham.obla.exception.InvalidEntityException;
 import com.feeham.obla.exception.ModelMappingException;
 import com.feeham.obla.exception.UserNotFoundException;
+import com.feeham.obla.model.borrow.BorrowReadDTO;
 import com.feeham.obla.model.userdto.UserCreateDTO;
 import com.feeham.obla.model.userdto.UserReadDTO;
 import com.feeham.obla.model.userdto.UserUpdateDTO;
@@ -102,6 +103,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long userId) throws UserNotFoundException{
         readById(userId);
-        userRepository.deleteById(userId);
+        User user = userRepository.findById(userId).get();
+        user.setArchived(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<String> getBorrowed(Long userId) throws UserNotFoundException {
+        readById(userId);
+        User user = userRepository.findById(userId).get();
+        return user.getBorrows().stream().map(borrow -> {
+            return borrow.getBook().getTitle();
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getBorrowedCurrently(Long userId) throws UserNotFoundException {
+        readById(userId);
+        User user = userRepository.findById(userId).get();
+        return user.getBorrows().stream().filter(borrow -> {
+            return borrow.getReturnDate() == null;
+        }).map(borrow -> {
+            return borrow.getBook().getTitle();
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BorrowReadDTO> getHistory(Long userId) throws UserNotFoundException {
+        readById(userId);
+        User user = userRepository.findById(userId).get();
+        return user.getBorrows().stream().map(borrow -> {
+            BorrowReadDTO result = new BorrowReadDTO();
+            result.setBorrowId(borrow.getBorrowId());
+            result.setBookId(borrow.getBook().getBookId());
+            result.setBookTitle(borrow.getBook().getTitle());
+            result.setDueDate(borrow.getDueDate());
+            result.setReturnDate(borrow.getReturnDate());
+            return result;
+        }).collect(Collectors.toList());
     }
 }

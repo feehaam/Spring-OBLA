@@ -62,7 +62,7 @@ public class BorrowServiceImpl implements BorrowService {
     public void update(Long bookId, Long userId) throws ModelMappingException, InvalidEntityException, NotFoundException {
         List<Borrow> borrows = borrowRepository.findAll();
         for(Borrow borrow : borrows){
-            if(borrow.getUser().getUserId() == userId && borrow.getReturnDate() == null){
+            if(borrow.getUser().getUserId() == userId && borrow.getBook().getBookId() == bookId && borrow.getReturnDate() == null){
                 if(borrow.getUser().getUserId() != userId){
                     throw new InvalidEntityException("User with id " + userId + " not found.", "Updating a borrow",
                             "User with id " + userId + " is not the owner of the current borrow of book ID " + bookId);
