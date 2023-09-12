@@ -15,14 +15,20 @@ import com.feeham.obla.service.interfaces.UserService;
 import com.feeham.obla.validation.UserValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final UserValidator userValidator;
@@ -142,5 +148,15 @@ public class UserServiceImpl implements UserService {
             result.setBorrowDate(borrow.getBorrowDate());
             return result;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = getUserEntityByEmail(email);
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(),
+                true,true,true,true,
+                roles);
     }
 }

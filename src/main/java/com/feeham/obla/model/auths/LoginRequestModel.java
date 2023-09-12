@@ -1,11 +1,10 @@
 package com.feeham.obla.model.auths;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequestModel {
     private String email;
