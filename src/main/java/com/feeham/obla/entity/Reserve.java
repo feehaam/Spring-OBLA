@@ -16,18 +16,16 @@ import java.time.LocalDateTime;
 public class Reserve {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reserve_id")
-    private Long reserveId;
+    private Long id;
 
     @Column(name = "reserve_date_time")
     private LocalDateTime reserveDateTime;
 
     // Reference properties
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
+    @JsonIgnore
     private Book book;
 }

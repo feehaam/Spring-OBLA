@@ -12,6 +12,7 @@ import com.feeham.obla.repository.ReservationRepository;
 import com.feeham.obla.repository.UserRepository;
 import com.feeham.obla.service.interfaces.ReservationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
         Book book = bookOptional.get();
         for(Reserve reserve: book.getReserves()){
-            if(reserve.getUser().getUserId() == userId){
+            if(reserve.getUserId() == userId){
                 throw new CustomException("BookReservationException", "Requesting reservation",  "Book already reserved",
                         "Book with ID " + bookId + " is already reserved by user with id " + userId);
             }
@@ -60,26 +61,26 @@ public class ReservationServiceImpl implements ReservationService {
         User user = userOptional.get();
         Reserve reserve = new Reserve();
         reserve.setBook(book);
-        reserve.setUser(user);
+        reserve.setUserId(user.getUserId());
         reserve.setReserveDateTime(LocalDateTime.now());
 
         reservationRepository.save(reserve);
     }
 
-    @Override
+    @Transactional
     public void cancel(Long userId, Long bookId) {
-        Optional<Book> bookOptional = bookRepository.findById(bookId);
-        if(bookOptional.isEmpty()) {
-            throw new BookNotFoundException("Book not found", "Requesting reservation", "Book with ID " + bookId + " not found.");
-        }
-        Book book = bookOptional.get();
-        for(Reserve reserve: book.getReserves()){
-            if(reserve.getUser().getUserId() == userId){
-                reservationRepository.delete(reserve);
-                return;
-            }
-        }
-        throw new CustomException("BookReservationException", "Book not reserved",  "Requesting reservation",
-                "Book with ID " + bookId + " is not reserved by user with id " + userId);
+        // Check if the book exists
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found", "Requesting reservation", "Book with ID " + bookId + " not found."));
+
+        // Find the reserve associated with the user and book
+        Reserve reserve = book.getReserves().stream()
+                .filter(res -> res.getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("BookReservationException", "Book not reserved", "Requesting reservation",
+                        "Book with ID " + bookId + " is not reserved by user with id " + userId));
+
+        // Delete the reserve using a custom query
+        reservationRepository.deleteByBookIdAndUserId(bookId, userId);
     }
 }

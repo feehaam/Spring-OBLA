@@ -49,7 +49,6 @@ public class UserController {
                             userDto.getPassword()
                     )
             );
-
             var user = userService.readByEmail(userDto.getEmail());
             List<String> roles = new ArrayList<String>();
             roles.add("ROLE_" + user.getRole().getRoleName());

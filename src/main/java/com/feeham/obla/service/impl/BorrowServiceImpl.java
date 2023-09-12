@@ -2,10 +2,12 @@ package com.feeham.obla.service.impl;
 
 import com.feeham.obla.entity.Book;
 import com.feeham.obla.entity.Borrow;
+import com.feeham.obla.entity.Reserve;
 import com.feeham.obla.entity.User;
 import com.feeham.obla.exception.*;
 import com.feeham.obla.repository.BookRepository;
 import com.feeham.obla.repository.BorrowRepository;
+import com.feeham.obla.repository.ReservationRepository;
 import com.feeham.obla.repository.UserRepository;
 import com.feeham.obla.service.interfaces.BorrowService;
 import com.feeham.obla.validation.BorrowValidator;
@@ -22,12 +24,14 @@ public class BorrowServiceImpl implements BorrowService {
     private BookRepository bookRepository;
     private UserRepository userRepository;
     private BorrowValidator borrowValidator;
+    private ReservationRepository reservationRepository;
 
-    public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, UserRepository userRepository, BorrowValidator borrowValidator) {
+    public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, UserRepository userRepository, BorrowValidator borrowValidator, ReservationRepository reservationRepository) {
         this.borrowRepository = borrowRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.borrowValidator = borrowValidator;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -79,9 +83,8 @@ public class BorrowServiceImpl implements BorrowService {
 
                 Book book = bookOptional.get();
                 borrow.setReturnDate(LocalDate.now());
-                borrowValidator.validate(borrow);
+                book.getReserves().forEach(this::delete);
                 borrowRepository.save(borrow);
-
                 book.setAvailability(true);
                 bookRepository.save(book);
 
@@ -90,5 +93,15 @@ public class BorrowServiceImpl implements BorrowService {
         }
         throw new NotFoundException("Book with id " + bookId + " not found.", "Returning book",
                 "There is no borrowed book with id " + bookId);
+    }
+
+    private void delete(Reserve reserve){
+        Long bookId = reserve.getBook().getBookId();
+        Long userId = reserve.getUserId();
+        reservationRepository.deleteByBookIdAndUserId(bookId, userId);
+    }
+
+    private void notify(Long userId){
+
     }
 }
