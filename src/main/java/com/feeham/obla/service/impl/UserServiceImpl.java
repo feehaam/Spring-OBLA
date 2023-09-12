@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
         readById(userId);
         User user = userRepository.findById(userId).get();
         return user.getBorrows().stream().map(borrow -> {
-            return borrow.getBook().getTitle();
+            return borrow.getBorrowId() + ". " + borrow.getBook().getTitle() + " (" + borrow.getBorrowDate()+")";
         }).collect(Collectors.toList());
     }
 
@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
         return user.getBorrows().stream().filter(borrow -> {
             return borrow.getReturnDate() == null;
         }).map(borrow -> {
-            return borrow.getBook().getTitle();
+            return borrow.getBorrowId() + ". " + borrow.getBook().getTitle() + " (" + borrow.getBorrowDate()+")";
         }).collect(Collectors.toList());
     }
 
@@ -139,6 +139,7 @@ public class UserServiceImpl implements UserService {
             result.setBookTitle(borrow.getBook().getTitle());
             result.setDueDate(borrow.getDueDate());
             result.setReturnDate(borrow.getReturnDate());
+            result.setBorrowDate(borrow.getBorrowDate());
             return result;
         }).collect(Collectors.toList());
     }

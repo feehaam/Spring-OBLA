@@ -31,7 +31,7 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public void create(Long bookId, Long userId) throws ModelMappingException, InvalidEntityException {
+    public void create(Long bookId, Long userId, LocalDate dueDate) throws ModelMappingException, InvalidEntityException {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
         if(userOptional.isEmpty()){
@@ -49,7 +49,8 @@ public class BorrowServiceImpl implements BorrowService {
         Borrow borrow = new Borrow();
         borrow.setBook(bookOptional.get());
         borrow.setUser(userOptional.get());
-        borrow.setDueDate(LocalDate.now());
+        borrow.setDueDate(dueDate);
+        borrow.setBorrowDate(LocalDate.now());
 
         borrowValidator.validate(borrow);
         borrowRepository.save(borrow);

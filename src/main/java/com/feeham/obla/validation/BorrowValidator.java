@@ -15,31 +15,39 @@ import java.util.Map;
 public class BorrowValidator {
     private static final List<String> RULES = new ArrayList<>();
     static {
-        RULES.add("- Due date cannot be null and must be a valid date");
-        RULES.add("- Return date must be after the due date");
+        RULES.add("- Borrow date cannot be null and must be a valid date.");
+        RULES.add("- Return date must not be before borrow date.");
+        RULES.add("- Borrow date cannot be null and must not be before borrow date.");
     }
 
     public void validate(Borrow borrow) {
         List<String> violations = new ArrayList<>();
 
-        validateDueDate(borrow.getDueDate(), violations);
-        validateReturnDate(borrow.getDueDate(), borrow.getReturnDate(), violations);
+        validateBorrowDate(borrow.getBorrowDate(), violations);
+        validateReturnDate(borrow.getBorrowDate(), borrow.getReturnDate(), violations);
+        validateDueDate(borrow.getBorrowDate(), borrow.getDueDate(), violations);
 
         if (!violations.isEmpty()) {
             throw new InvalidEntityException("Borrow", "Borrow validation failed", createValidationData(violations));
         }
     }
 
-    private void validateDueDate(LocalDate dueDate, List<String> violations) {
+    private void validateBorrowDate(LocalDate borrowDate, List<String> violations) {
         LocalDate currentDate = LocalDate.now();
-        if (dueDate == null || dueDate.isBefore(currentDate)) {
+        if (borrowDate == null || borrowDate.isBefore(currentDate)) {
             violations.add(RULES.get(0));
         }
     }
 
-    private void validateReturnDate(LocalDate dueDate, LocalDate returnDate, List<String> violations) {
-        if (returnDate != null && returnDate.isBefore(dueDate)) {
+    private void validateReturnDate(LocalDate borrowDate, LocalDate returnDate, List<String> violations) {
+        if (returnDate != null && returnDate.isBefore(borrowDate)) {
             violations.add(RULES.get(1));
+        }
+    }
+
+    private void validateDueDate(LocalDate borrowDate, LocalDate dueDate, List<String> violations) {
+        if (dueDate == null || dueDate.isBefore(borrowDate)) {
+            violations.add(RULES.get(2));
         }
     }
 

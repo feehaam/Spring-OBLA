@@ -4,6 +4,8 @@ import com.feeham.obla.service.interfaces.BorrowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 public class BorrowController {
 
@@ -14,8 +16,9 @@ public class BorrowController {
     }
 
     @PostMapping("/books/{bookId}/borrow")
-    public ResponseEntity<?> borrowBook(@PathVariable Long bookId){
-        borrowService.create(bookId, 1L);
+    public ResponseEntity<?> borrowBook(@PathVariable Long bookId, @RequestBody LocalDate dueDate){
+        // user id
+        borrowService.create(bookId, 1L, dueDate);
         return ResponseEntity.ok("Borrowed the book successfully.");
     }
 
