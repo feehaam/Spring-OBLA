@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->{
                     auth
                             .requestMatchers(HttpMethod.POST, APIConstants.SIGN_IN,APIConstants.SIGN_UP).permitAll()
-                            .requestMatchers(HttpMethod.GET,"/users/**").hasRole("CUSTOMER")
-                            .requestMatchers(HttpMethod.GET,"/admin/**").hasRole("ADMIN")
+//                            .requestMatchers(HttpMethod.GET,"/users/**").hasRole("CUSTOMER")
+//                            .requestMatchers(HttpMethod.GET,"/admin/**").hasRole("ADMIN")
                             .anyRequest().permitAll();
                 })
                 .addFilter(new CustomAuthenticationFilter(authenticationManager))
