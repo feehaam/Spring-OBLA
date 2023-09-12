@@ -39,11 +39,11 @@ public class BorrowServiceImpl implements BorrowService {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
         if(userOptional.isEmpty()){
-            throw new UserNotFoundException("User with id " + userId + " not found.", "Borrowing a book",
-                    "There is no user in database with id " + userId);
+            throw new UserNotFoundException("The expected user is not found.", "Borrowing a book",
+                    "There is no user in database with given id.");
         }
         if(bookOptional.isEmpty() || bookOptional.get().getArchived()){
-            throw new BookNotFoundException("Book not found", "Borrowing a book", "Book with ID " + bookId + " not found.");
+            throw new BookNotFoundException("Book not found", "Borrowing a book", "Book with given id is not found in the database.");
         }
         Book book = bookOptional.get();
         if (!book.getAvailability()) {
@@ -68,17 +68,13 @@ public class BorrowServiceImpl implements BorrowService {
         List<Borrow> borrows = borrowRepository.findAll();
         for(Borrow borrow : borrows){
             if(borrow.getUser().getUserId() == userId && borrow.getBook().getBookId() == bookId && borrow.getReturnDate() == null){
-                if(borrow.getUser().getUserId() != userId){
-                    throw new InvalidEntityException("User with id " + userId + " not found.", "Updating a borrow",
-                            "User with id " + userId + " is not the owner of the current borrow of book ID " + bookId);
-                }
                 Optional<Book> bookOptional = bookRepository.findById(borrow.getBook().getBookId());
                 if(bookOptional.isEmpty()){
-                    throw new BookNotFoundException("Book not found", "Borrowing a book", "Book with ID " + borrow.getBook().getBookId() + " not found.");
+                    throw new BookNotFoundException("Book not found", "Borrowing a book", "Book with given id is not found.");
                 }
                 if(borrow.getReturnDate() != null){
                     throw new CustomException("BookReturnedException", "Can not return book",
-                            "Returning a book", "The book " + borrow.getBook().getTitle() + " is already returned by you. .");
+                            "Returning a book", "The book " + borrow.getBook().getTitle() + " is already returned by the customer. .");
                 }
 
                 Book book = bookOptional.get();
@@ -91,8 +87,8 @@ public class BorrowServiceImpl implements BorrowService {
                 return;
             }
         }
-        throw new NotFoundException("Book with id " + bookId + " not found.", "Returning book",
-                "There is no borrowed book with id " + bookId);
+        throw new NotFoundException("Book with given id is not found.", "Returning book",
+                "There is no borrowed book with given in in the database");
     }
 
     private void delete(Reserve reserve){

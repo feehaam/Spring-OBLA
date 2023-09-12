@@ -55,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
                 throw new CustomException("DuplicateEntityException",
                         "Try to edit existing review, review id: " + review.getReviewId(),
                         "Can not add multiple review",
-                        "User with id " + userId + " already reviewed this book.");
+                        "User '" + userOptional.get().getFirstName() + "' already reviewed this book.");
             }
         }
         Review review = new Review();
@@ -73,8 +73,8 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewReadDTO readById(Long reviewId) throws ModelMappingException, ReviewNotFoundException {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
         if(reviewOptional.isEmpty()){
-            throw new ReviewNotFoundException("Review with id " + reviewId + " not found.", "Searching for review by id",
-                    "There is no review in database with id " + reviewId);
+            throw new ReviewNotFoundException("Review with given id is not found.", "Searching for review by id",
+                    "There is no review in database with the provided id");
         }
         return ReviewConverter.ReviewToReviewRead(reviewOptional.get());
     }
@@ -92,20 +92,20 @@ public class ReviewServiceImpl implements ReviewService {
     public void update(Long reviewId, Long bookId, Long userId, ReviewUpdateDTO reviewUpdateDTO) throws ModelMappingException, InvalidEntityException, ReviewNotFoundException {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
         if(reviewOptional.isEmpty()){
-            throw new ReviewNotFoundException("Review with id " + reviewId + " not found.",
+            throw new ReviewNotFoundException("Review with given id is not found.",
                     "Updating review",
                     "There is no review in database with id " + reviewId);
         }
         Review review = reviewOptional.get();
         if(review.getUser().getUserId() != userId){
             throw new CustomException("InvalidEntityException", "Can not edit review",
-                    "Attemp to edit review with id " + review,
-                    "User with id " + userId + " isn't owner of this review hence doesn't have the privillage to update.");
+                    "Attempt to edit review with id " + review,
+                    "User '" + review.getUser().getFirstName() + "' isn't owner of this review hence doesn't have the privillage to update.");
         }
         if(review.getBook().getBookId()!= bookId){
             throw new CustomException("InvalidEntityException", "Can not edit review",
                     "Attempt to edit review with id " + review.getReviewId(),
-                    "Book with id " + bookId + " doesn't conttain the expcected review.");
+                    "Book '" + review.getBook().getTitle() + "' doesn't contain the expected review.");
         }
 
         review.setRating(reviewUpdateDTO.getRating());
@@ -117,15 +117,15 @@ public class ReviewServiceImpl implements ReviewService {
     public void delete(Long userId, Long reviewId) throws ReviewNotFoundException {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
         if(reviewOptional.isEmpty()){
-            throw new ReviewNotFoundException("Review with id " + reviewId + " not found.",
+            throw new ReviewNotFoundException("Review with given id is not found.",
                     "Deleting review",
-                    "There is no review in database with id " + reviewId);
+                    "There is no review in database with the provided id");
         }
         Review review = reviewOptional.get();
         if(review.getUser().getUserId() != userId){
             throw new CustomException("InvalidEntityException", "Can not edit review",
                     "Attempt to delete review with id " + review.getReviewId(),
-                    "User with id " + userId + " isn't owner of this review hence doesn't have the privillage to update.");
+                    "User '" + review.getUser().getFirstName() + "'  isn't owner of this review hence doesn't have the privilege to update.");
         }
         reviewRepository.delete(review);
     }
@@ -134,7 +134,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewReadDTO> findByBookId(Long bookId) throws ModelMappingException, BookNotFoundException {
         Optional<Book> bookOptional = bookRepository.findById(bookId);
         if(bookOptional.isEmpty()){
-            throw new BookNotFoundException("Book not found", "Get reviews by book", "Book with ID " + bookId + " not found.");
+            throw new BookNotFoundException("Book not found", "Get reviews by book", "Book with provided id is not found.");
         }
         return bookOptional.get().getReviews().stream()
                 .map( review -> ReviewConverter.ReviewToReviewRead(review))

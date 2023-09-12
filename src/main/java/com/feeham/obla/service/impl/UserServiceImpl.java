@@ -109,8 +109,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userValidator.validate(user);
             userRepository.save(user);
         } else {
-            throw new UserNotFoundException("User with id " + userId + " not found.", "Updaing user with id "+userId,
-                    "There is no user in database with id " + userId);
+            throw new UserNotFoundException("User with given id is not found.", "Updating user",
+                    "There is no user in database with the provided id.");
         }
     }
 

@@ -6,10 +6,12 @@ import com.feeham.obla.exception.CustomException;
 import com.feeham.obla.exception.InvalidEntityException;
 import com.feeham.obla.exception.ModelMappingException;
 import com.feeham.obla.model.bookdto.BookCreateDTO;
-import com.feeham.obla.model.bookdto.BookReadDTO;
+import com.feeham.obla.model.bookdto.BookReadDTOAdmin;
+import com.feeham.obla.model.bookdto.BookReadDTOCustomer;
 import com.feeham.obla.model.bookdto.BookUpdateDTO;
 import com.feeham.obla.repository.BookRepository;
 import com.feeham.obla.service.interfaces.BookService;
+import com.feeham.obla.utilities.enums.Roles;
 import com.feeham.obla.validation.BookValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -45,23 +47,32 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookReadDTO readById(Long bookId) throws ModelMappingException, BookNotFoundException {
+    public BookReadDTOAdmin readById(Long bookId) throws ModelMappingException, BookNotFoundException {
         Optional<Book> bookOptional = bookRepository.findById(bookId);
         if(bookOptional.isEmpty()){
             throw new BookNotFoundException("Book not found", "Get book by ID", "Book with ID " + bookId + " not found.");
         }
         Book book = bookOptional.get();
-        BookReadDTO bookReadDTO = modelMapper.map(book, BookReadDTO.class);
+        BookReadDTOAdmin bookReadDTO = modelMapper.map(book, BookReadDTOAdmin.class);
         if(book.getAvailability()) bookReadDTO.setStatus("Available");
         else bookReadDTO.setStatus("Taken");
         return bookReadDTO;
     }
 
     @Override
-    public List<BookReadDTO> readAll() throws ModelMappingException {
-        return bookRepository.findAll().stream()
+    public List<?> readAll(String role) throws ModelMappingException {
+        if (role.contains(Roles.ADMIN.toString()))
+            return bookRepository.findAll().stream()
                 .map(book -> {
-                    BookReadDTO result = modelMapper.map(book, BookReadDTO.class);
+                    BookReadDTOAdmin result = modelMapper.map(book, BookReadDTOAdmin.class);
+                    result.setStatus(book.getAvailability() ? "Available" : "Taken");
+                    result.setDeleted(book.getArchived() ? "Yes" : "No");
+                    return result;
+                })
+                .collect(Collectors.toList());
+        else return bookRepository.findAll().stream()
+                .map(book -> {
+                    BookReadDTOCustomer result = modelMapper.map(book, BookReadDTOCustomer.class);
                     result.setStatus(book.getAvailability() ? "Available" : "Taken");
                     return result;
                 })
@@ -88,8 +99,8 @@ public class BookServiceImpl implements BookService {
             throw new BookNotFoundException("Book not found", "Delete book", "Book with ID " + bookId + " doesn't exist.");
         }
         Book book = bookOptional.get();
-        if(!book.getAvailability()) {
-            throw new BookNotFoundException("Book not found", "Delete book", "Book with ID " + bookId + " is taken.");
+        if(book.getArchived()) {
+            throw new BookNotFoundException("Book not found", "Delete book", "Book with ID " + bookId + " is already archived.");
         }
         book.setArchived(true);
         bookRepository.save(book);

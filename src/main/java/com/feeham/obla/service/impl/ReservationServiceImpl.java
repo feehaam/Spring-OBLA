@@ -71,16 +71,14 @@ public class ReservationServiceImpl implements ReservationService {
     public void cancel(Long userId, Long bookId) {
         // Check if the book exists
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("Book not found", "Requesting reservation", "Book with ID " + bookId + " not found."));
+                .orElseThrow(() -> new BookNotFoundException("Book not found", "Requesting reservation", "Book with given id is not found."));
 
-        // Find the reserve associated with the user and book
         Reserve reserve = book.getReserves().stream()
                 .filter(res -> res.getUserId().equals(userId))
                 .findFirst()
                 .orElseThrow(() -> new CustomException("BookReservationException", "Book not reserved", "Requesting reservation",
-                        "Book with ID " + bookId + " is not reserved by user with id " + userId));
+                        "The target book is not reserved by the user"));
 
-        // Delete the reserve using a custom query
         reservationRepository.deleteByBookIdAndUserId(bookId, userId);
     }
 }
