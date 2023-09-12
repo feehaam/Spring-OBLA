@@ -42,4 +42,7 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Borrow> borrows;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Reserve> reserves;
 }

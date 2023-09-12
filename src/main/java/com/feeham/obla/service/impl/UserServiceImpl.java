@@ -6,23 +6,37 @@ import com.feeham.obla.exception.CustomException;
 import com.feeham.obla.exception.InvalidEntityException;
 import com.feeham.obla.exception.ModelMappingException;
 import com.feeham.obla.exception.UserNotFoundException;
+import com.feeham.obla.model.auths.LoginRequestModel;
+import com.feeham.obla.model.auths.LoginResponseModel;
 import com.feeham.obla.model.borrow.BorrowReadDTO;
 import com.feeham.obla.model.userdto.UserCreateDTO;
 import com.feeham.obla.model.userdto.UserReadDTO;
 import com.feeham.obla.model.userdto.UserUpdateDTO;
 import com.feeham.obla.repository.UserRepository;
 import com.feeham.obla.service.interfaces.UserService;
+import com.feeham.obla.utilities.token.JWTUtils;
 import com.feeham.obla.validation.UserValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final UserValidator userValidator;
@@ -113,7 +127,7 @@ public class UserServiceImpl implements UserService {
         readById(userId);
         User user = userRepository.findById(userId).get();
         return user.getBorrows().stream().map(borrow -> {
-            return borrow.getBook().getTitle();
+            return borrow.getBorrowId() + ". " + borrow.getBook().getTitle() + " (" + borrow.getBorrowDate()+")";
         }).collect(Collectors.toList());
     }
 
@@ -124,7 +138,7 @@ public class UserServiceImpl implements UserService {
         return user.getBorrows().stream().filter(borrow -> {
             return borrow.getReturnDate() == null;
         }).map(borrow -> {
-            return borrow.getBook().getTitle();
+            return borrow.getBorrowId() + ". " + borrow.getBook().getTitle() + " (" + borrow.getBorrowDate()+")";
         }).collect(Collectors.toList());
     }
 
@@ -139,7 +153,18 @@ public class UserServiceImpl implements UserService {
             result.setBookTitle(borrow.getBook().getTitle());
             result.setDueDate(borrow.getDueDate());
             result.setReturnDate(borrow.getReturnDate());
+            result.setBorrowDate(borrow.getBorrowDate());
             return result;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = getUserEntityByEmail(email);
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(),
+                true,true,true,true,
+                roles);
     }
 }
