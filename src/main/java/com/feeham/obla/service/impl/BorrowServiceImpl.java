@@ -10,6 +10,7 @@ import com.feeham.obla.repository.BorrowRepository;
 import com.feeham.obla.repository.ReservationRepository;
 import com.feeham.obla.repository.UserRepository;
 import com.feeham.obla.service.interfaces.BorrowService;
+import com.feeham.obla.utilities.notification.NotificationService;
 import com.feeham.obla.validation.BorrowValidator;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +80,8 @@ public class BorrowServiceImpl implements BorrowService {
 
                 Book book = bookOptional.get();
                 borrow.setReturnDate(LocalDate.now());
-                book.getReserves().forEach(this::delete);
+                book.getReserves().forEach(this::notify);
+                reservationRepository.deleteByBookId(bookId);
                 borrowRepository.save(borrow);
                 book.setAvailability(true);
                 bookRepository.save(book);
@@ -88,16 +90,15 @@ public class BorrowServiceImpl implements BorrowService {
             }
         }
         throw new NotFoundException("Book with given id is not found.", "Returning book",
-                "There is no borrowed book with given in in the database");
+                "There is no borrowed book with given user id in the database");
     }
 
-    private void delete(Reserve reserve){
-        Long bookId = reserve.getBook().getBookId();
+    private void notify(Reserve reserve){
         Long userId = reserve.getUserId();
-        reservationRepository.deleteByBookIdAndUserId(bookId, userId);
-    }
-
-    private void notify(Long userId){
-
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return;
+        }
+        NotificationService.notifyBookAvailability(userOptional.get().getEmail());
     }
 }

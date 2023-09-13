@@ -12,4 +12,8 @@ public interface ReservationRepository extends JpaRepository<Reserve, Long> {
     @Modifying
     @Query("DELETE FROM Reserve r WHERE r.book.id = :bookId AND r.userId = :userId")
     void deleteByBookIdAndUserId(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+    @Modifying
+    @Query("DELETE FROM Reserve r WHERE r.book.id = :bookId")
+    void deleteByBookId(@Param("bookId") Long bookId);
 }

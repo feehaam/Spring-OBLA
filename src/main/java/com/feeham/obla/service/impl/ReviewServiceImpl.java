@@ -110,6 +110,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         review.setRating(reviewUpdateDTO.getRating());
         review.setComment(reviewUpdateDTO.getComment());
+        reviewValidator.validate(review);
         reviewRepository.save(review);
     }
 
