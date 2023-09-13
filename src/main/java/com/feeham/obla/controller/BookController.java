@@ -23,24 +23,49 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    /**
+     * Creates a new book.
+     *
+     * @param bookCreateDTO The book information to create.
+     * @return A ResponseEntity with a success message.
+     */
     @PostMapping("/books/create")
-    public ResponseEntity<?> createBook(@RequestBody BookCreateDTO bookCreateDTO){
+    public ResponseEntity<?> createBook(@RequestBody BookCreateDTO bookCreateDTO) {
         bookService.create(bookCreateDTO);
         return ResponseEntity.ok("New book created.");
     }
 
+    /**
+     * Updates an existing book.
+     *
+     * @param bookId       The ID of the book to update.
+     * @param bookUpdateDTO The updated book information.
+     * @return A ResponseEntity with a success message.
+     */
     @PutMapping("/books/update/{bookId}")
-    public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateDTO bookUpdateDTO){
+    public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateDTO bookUpdateDTO) {
         bookUpdateDTO.setBookId(bookId);
         bookService.update(bookUpdateDTO);
         return ResponseEntity.ok("Book updated successfully.");
     }
 
+    /**
+     * Deletes a book by its ID.
+     *
+     * @param bookId The ID of the book to delete.
+     * @return A ResponseEntity with the deleted book ID.
+     */
     @DeleteMapping("/books/delete/{bookId}")
-    public ResponseEntity<?> deleteBook(@PathVariable Long bookId){
+    public ResponseEntity<?> deleteBook(@PathVariable Long bookId) {
+        bookService.delete(bookId);
         return ResponseEntity.ok(bookId);
     }
 
+    /**
+     * Retrieves a list of all books.
+     *
+     * @return A ResponseEntity with a list of books.
+     */
     @GetMapping("/books/all")
     public ResponseEntity<?> getAllBooks() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,9 +80,14 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
     }
 
-
+    /**
+     * Deletes a book by its ID.
+     *
+     * @param bookId The ID of the book to delete.
+     * @return A ResponseEntity with a success message.
+     */
     @DeleteMapping("/books/delete")
-    public ResponseEntity<?> getBookById(@RequestBody Long bookId){
+    public ResponseEntity<?> getBookById(@RequestBody Long bookId) {
         bookService.delete(bookId);
         return ResponseEntity.ok("Book deleted successfully.");
     }

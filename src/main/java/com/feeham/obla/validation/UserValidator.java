@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class UserValidator {
+
+    // Define a list of validation rules to explain the validation criteria.
     private static final List<String> RULES = new ArrayList<>();
     static {
         RULES.add("- User ID must be non-negative");
@@ -26,13 +28,17 @@ public class UserValidator {
     }
 
     private final PasswordEncoder passwordEncoder;
+
+    // Constructor injection of PasswordEncoder to encode passwords.
     public UserValidator(PasswordEncoder passwordEncoder){
         this.passwordEncoder = passwordEncoder;
     }
 
+    // This method performs validation on a User entity.
     public void validate(User user) throws InvalidEntityException{
         List<String> violations = new ArrayList<>();
 
+        // Validate the user's attributes one by one.
         validateUserId(user.getUserId(), violations);
         validateFirstName(user.getFirstName(), violations);
         validateLastName(user.getLastName(), violations);
@@ -40,9 +46,12 @@ public class UserValidator {
         validatePassword(user.getPassword(), violations);
         validateRole(user.getRole(), violations);
 
+        // If there are violations, throw an InvalidEntityException with details.
         if (!violations.isEmpty()) {
             throw new InvalidEntityException("User", "User validation failed", createValidationData(violations));
         }
+
+        // Encode the user's password before saving it.
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
@@ -82,10 +91,11 @@ public class UserValidator {
         }
     }
 
+    // Create a map containing validation data for reporting.
     private Map<String, List<String>> createValidationData(List<String> violations) {
         Map<String, List<String>> validationData = new HashMap<>();
-        validationData.put("Rules", RULES);
-        validationData.put("Violated", violations);
+        validationData.put("Rules", RULES);  // List of validation rules.
+        validationData.put("Violated", violations);  // List of violated rules.
         return validationData;
     }
 }

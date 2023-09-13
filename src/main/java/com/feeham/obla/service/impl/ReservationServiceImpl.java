@@ -4,9 +4,7 @@ import com.feeham.obla.entity.Book;
 import com.feeham.obla.entity.Borrow;
 import com.feeham.obla.entity.Reserve;
 import com.feeham.obla.entity.User;
-import com.feeham.obla.exception.BookNotFoundException;
-import com.feeham.obla.exception.CustomException;
-import com.feeham.obla.exception.UserNotFoundException;
+import com.feeham.obla.exception.*;
 import com.feeham.obla.repository.BookRepository;
 import com.feeham.obla.repository.ReservationRepository;
 import com.feeham.obla.repository.UserRepository;
@@ -30,33 +28,42 @@ public class ReservationServiceImpl implements ReservationService {
         this.bookRepository = bookRepository;
     }
 
+    /**
+     * Reserves a book for a user.
+     *
+     * @param userId The ID of the user making the reservation.
+     * @param bookId The ID of the book to be reserved.
+     * @throws BookNotFoundException If the book is not found.
+     * @throws CustomException      If the book is not available, already reserved, or already borrowed.
+     * @throws UserNotFoundException If the user is not found.
+     */
     @Override
     public void reserve(Long userId, Long bookId) {
         Optional<Book> bookOptional = bookRepository.findById(bookId);
-        if(bookOptional.isEmpty()) {
+        if (bookOptional.isEmpty()) {
             throw new BookNotFoundException("Book not found", "Requesting reservation", "Book with ID " + bookId + " not found.");
         }
         Book book = bookOptional.get();
-        for(Reserve reserve: book.getReserves()){
-            if(reserve.getUserId() == userId){
-                throw new CustomException("BookReservationException", "Requesting reservation",  "Book already reserved",
-                        "Book with ID " + bookId + " is already reserved by user with id " + userId);
+        for (Reserve reserve : book.getReserves()) {
+            if (reserve.getUserId() == userId) {
+                throw new CustomException("BookReservationException", "Requesting reservation", "Book already reserved",
+                        "Book with ID " + bookId + " is already reserved by user with ID " + userId);
             }
         }
-        for(Borrow borrow: book.getBorrows()){
-            if(borrow.getUser().getUserId() == userId){
-                throw new CustomException("BookReservationException", "Requesting reservation",  "Book already borrowed",
+        for (Borrow borrow : book.getBorrows()) {
+            if (borrow.getUser().getUserId() == userId) {
+                throw new CustomException("BookReservationException", "Requesting reservation", "Book already borrowed",
                         "The requested book " + book.getTitle() + " is already borrowed by the requested user " + borrow.getUser().getFirstName());
             }
         }
-        if(book.getAvailability()){
-            throw new CustomException("BookReservationException", "Requesting reservation",  "Can not reserve an available book",
+        if (book.getAvailability()) {
+            throw new CustomException("BookReservationException", "Requesting reservation", "Can not reserve an available book",
                     "Book with ID " + bookId + " is available and can be directly borrowed.");
         }
         Optional<User> userOptional = userRepository.findById(userId);
-        if(userOptional.isEmpty()){
-            throw new UserNotFoundException("User with id " + userId + " not found.", "Requesting reservation",
-                    "There is no user in database with id " + userId);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("User with ID " + userId + " not found.", "Requesting reservation",
+                    "There is no user in the database with ID " + userId);
         }
         User user = userOptional.get();
         Reserve reserve = new Reserve();
@@ -67,11 +74,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reserve);
     }
 
+    /**
+     * Cancels a reservation for a book by a user.
+     *
+     * @param userId The ID of the user canceling the reservation.
+     * @param bookId The ID of the book to cancel the reservation for.
+     * @throws BookNotFoundException  If the book is not found.
+     * @throws CustomException       If the book is not reserved by the user.
+     */
     @Transactional
     public void cancel(Long userId, Long bookId) {
         // Check if the book exists
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("Book not found", "Requesting reservation", "Book with given id is not found."));
+                .orElseThrow(() -> new BookNotFoundException("Book not found", "Requesting reservation", "Book with given ID is not found."));
 
         Reserve reserve = book.getReserves().stream()
                 .filter(res -> res.getUserId().equals(userId))

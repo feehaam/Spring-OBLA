@@ -17,16 +17,27 @@ public class UserCredentialServiceImpl implements UserCredentialsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Retrieves the user's ID based on the username obtained from the security context.
+     *
+     * @return The ID of the authenticated user.
+     * @throws UserNotFoundException If the user is not found in the database.
+     */
     @Override
     public Long getUserId() {
         Optional<User> userOptional = userRepository.findByEmail(getUserNameFromToken());
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             return userOptional.get().getUserId();
         }
         throw new UserNotFoundException("User with username " + getUserNameFromToken() + " not found.", "Post authorizing user info.",
-                "There is no user in database with email " + getUserNameFromToken());
+                "There is no user in the database with email " + getUserNameFromToken());
     }
 
+    /**
+     * Retrieves the username from the security context.
+     *
+     * @return The username of the authenticated user.
+     */
     public final String getUserNameFromToken() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

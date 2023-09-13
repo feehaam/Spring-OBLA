@@ -19,20 +19,38 @@ public class BorrowController {
         this.credentials = userCredentialsService;
     }
 
+    /**
+     * Borrow a book by specifying the book ID and due date.
+     *
+     * @param bookId   The ID of the book to borrow.
+     * @param dueDate  The due date for returning the book.
+     * @return A ResponseEntity with a success message.
+     */
     @PostMapping("/books/{bookId}/borrow")
-    public ResponseEntity<?> borrowBook(@PathVariable Long bookId, @RequestBody LocalDate dueDate){
-        // user id
+    public ResponseEntity<?> borrowBook(@PathVariable Long bookId, @RequestBody LocalDate dueDate) {
+        // Get the user ID from the authentication token
         String userName = getUserNameFromToken();
         borrowService.create(bookId, credentials.getUserId(), dueDate);
         return ResponseEntity.ok("Borrowed the book successfully.");
     }
 
+    /**
+     * Get the username from the authentication token.
+     *
+     * @return The username extracted from the authentication token.
+     */
     public static String getUserNameFromToken() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    /**
+     * Return a borrowed book by specifying the book ID.
+     *
+     * @param bookId The ID of the book to return.
+     * @return A ResponseEntity with a success message.
+     */
     @PostMapping("/books/{bookId}/return")
-    public ResponseEntity<?> returnBook(@PathVariable Long bookId){
+    public ResponseEntity<?> returnBook(@PathVariable Long bookId) {
         borrowService.update(bookId, credentials.getUserId());
         return ResponseEntity.ok("Returned the book successfully.");
     }
