@@ -11,6 +11,7 @@ public class BookReadDTOAdmin {
     private String title;
     private String author;
     private String isbn;
+    private String imgUrl;
     private String description;
     private String status;
     private String deleted;

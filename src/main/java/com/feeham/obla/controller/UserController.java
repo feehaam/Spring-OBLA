@@ -22,14 +22,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -40,40 +38,50 @@ public class UserController {
      */
     @PostMapping("/user/register")
     public ResponseEntity<?> register(@RequestBody UserCreateDTO userCreateDTO) {
+        userCreateDTO.setRole("CUSTOMER");
         userService.create(userCreateDTO);
         return new ResponseEntity<>("Account successfully registered", HttpStatus.CREATED);
     }
 
-    /**
-     * Log in a user by providing email and password for authentication.
-     *
-     * @param userDto The login request model containing email and password.
-     * @return A ResponseEntity containing a login response model with a bearer token.
-     * @throws Exception If authentication fails.
-     */
-    @PostMapping("/user/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestModel userDto) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            userDto.getEmail(),
-                            userDto.getPassword()
-                    )
-            );
-            var user = userService.readByEmail(userDto.getEmail());
-            List<String> roles = new ArrayList<String>();
-            roles.add("ROLE_" + user.getRole().getRoleName());
-            var jwtToken = JWTUtils.generateToken(user.getEmail(), roles);
-            return new ResponseEntity<>(LoginResponseModel.builder()
-                    .username(user.getEmail())
-                    .bearerToken(jwtToken)
-                    .build(), HttpStatus.OK);
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Invalid email or password", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to authenticate", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/user/register/admin")
+    public ResponseEntity<?> registerAsAdmin(@RequestBody UserCreateDTO userCreateDTO, @RequestParam String permissionToken) {
+        if(permissionToken == null || !permissionToken.equals("12345"))
+            return new ResponseEntity<>("Invalid permission token!", HttpStatus.BAD_REQUEST);
+        userCreateDTO.setRole("ADMIN");
+        userService.create(userCreateDTO);
+        return new ResponseEntity<>("Account successfully registered", HttpStatus.CREATED);
     }
+
+//    /**
+//     * Log in a user by providing email and password for authentication.
+//     *
+//     * @param userDto The login request model containing email and password.
+//     * @return A ResponseEntity containing a login response model with a bearer token.
+//     * @throws Exception If authentication fails.
+//     */
+//    @PostMapping("/user/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequestModel userDto) throws Exception {
+//        try {
+//            authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            userDto.getEmail(),
+//                            userDto.getPassword()
+//                    )
+//            );
+//            var user = userService.readByEmail(userDto.getEmail());
+//            List<String> roles = new ArrayList<String>();
+//            roles.add("ROLE_" + user.getRole().getRoleName());
+//            var jwtToken = JWTUtils.generateToken(user.getEmail(), roles);
+//            return new ResponseEntity<>(LoginResponseModel.builder()
+//                    .username(user.getEmail())
+//                    .bearerToken(jwtToken)
+//                    .build(), HttpStatus.OK);
+//        } catch (BadCredentialsException e) {
+//            return new ResponseEntity<>("Invalid email or password", HttpStatus.BAD_REQUEST);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("Failed to authenticate", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     /**
      * Get user details by specifying the user ID.

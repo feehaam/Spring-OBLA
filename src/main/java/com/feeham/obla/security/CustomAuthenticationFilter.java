@@ -30,7 +30,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final AuthenticationManager authenticationManager;
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager){
         this.authenticationManager = authenticationManager;
-        setFilterProcessesUrl("/sign_in");
+        setFilterProcessesUrl("/user/login");
     }
 
     private final Map<String, Integer> attemptCount = new HashMap<String, Integer>();
@@ -68,7 +68,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         userRoles.add("ROLE_"+userRole);
         String accessToken = JWTUtils.generateToken(username, userRoles);
 
-        LoginResponseModel responseBody = new LoginResponseModel(userReadDto.getEmail(), accessToken);
+        LoginResponseModel responseBody = new LoginResponseModel(userReadDto.getEmail(), accessToken, userRoles);
         writeResponse(response, responseBody);
     }
 

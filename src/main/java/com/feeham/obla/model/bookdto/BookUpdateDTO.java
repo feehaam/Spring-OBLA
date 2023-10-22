@@ -11,5 +11,6 @@ public class BookUpdateDTO {
     private Long bookId;
     private String title;
     private String author;
+    private String imgUrl;
     private String description;
 }

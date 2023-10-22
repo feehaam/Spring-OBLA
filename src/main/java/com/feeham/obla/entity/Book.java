@@ -33,6 +33,9 @@ public class Book {
     @Column(name = "availability")
     private Boolean availability;
 
+    @Column(name = "cover_image_url")
+    private String imgUrl;
+
     @Column(name = "archived")
     private Boolean archived;
 

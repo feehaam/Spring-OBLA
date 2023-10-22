@@ -18,6 +18,7 @@ public class UserCredentialServiceImpl implements UserCredentialsService {
     }
 
     /**
+     *
      * Retrieves the user's ID based on the username obtained from the security context.
      *
      * @return The ID of the authenticated user.
@@ -34,6 +35,7 @@ public class UserCredentialServiceImpl implements UserCredentialsService {
     }
 
     /**
+     *
      * Retrieves the username from the security context.
      *
      * @return The username of the authenticated user.

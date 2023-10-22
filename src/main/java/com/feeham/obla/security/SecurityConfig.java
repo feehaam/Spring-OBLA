@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->{
                     auth
-                            .requestMatchers(HttpMethod.POST, APIConstants.SIGN_IN,APIConstants.SIGN_UP).permitAll()
+                            .requestMatchers(HttpMethod.POST, APIConstants.SIGN_IN,APIConstants.SIGN_UP, APIConstants.SIGN_UP_ADMIN).permitAll()
                             .requestMatchers(HttpMethod.GET, "/users/{userId}").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.GET, "/users/{userId}/books").hasAnyRole("ADMIN", "CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/users/{userId}/borrowed-books").hasAnyRole("ADMIN", "CUSTOMER")

@@ -11,5 +11,6 @@ public class BookCreateDTO {
     private String title;
     private String author;
     private String isbn;
+    private String imgUrl;
     private String description;
 }
