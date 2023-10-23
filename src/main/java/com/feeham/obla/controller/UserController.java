@@ -93,6 +93,11 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable Long userId) {
         return new ResponseEntity<>(userService.readById(userId), HttpStatus.OK);
     }
+    // Get by email
+    @GetMapping("/users/profile")
+    public ResponseEntity<?> getUserByEmail(@RequestParam String email) {
+        return new ResponseEntity<>(userService.readByEmail(email), HttpStatus.OK);
+    }
 
     /**
      * Get the list of books borrowed by a user by specifying the user ID.

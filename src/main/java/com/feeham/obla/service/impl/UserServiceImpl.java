@@ -140,11 +140,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setAddress(userUpdateDTO.getAddress());
-            user.setPassword(userUpdateDTO.getPassword());
             user.setFirstName(userUpdateDTO.getFirstName());
             user.setLastName(userUpdateDTO.getLastName());
-            user.setRole(new Role(userUpdateDTO.getRole().toUpperCase()));
+            String password = user.getPassword();
             userValidator.validate(user);
+            user.setPassword(password);
             userRepository.save(user);
         } else {
             throw new UserNotFoundException("User with given id is not found.", "Updating user",

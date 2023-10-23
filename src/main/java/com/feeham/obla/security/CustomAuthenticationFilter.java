@@ -41,12 +41,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         try {
             credentials = new ObjectMapper().readValue(request.getInputStream(), LoginRequestModel.class);
         } catch (IOException e) {
-            writeResponse(response, "Exception while reading credentials");
+            writeResponse(response, "Exception while reading credentials", 400);
         }
         attemptCount.put(credentials.getEmail(), attemptCount.getOrDefault(credentials.getEmail(), 0) + 1);
         return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        credentials.getEmail(),credentials.getPassword()));
+                    new UsernamePasswordAuthenticationToken(
+                            credentials.getEmail(),credentials.getPassword()));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String accessToken = JWTUtils.generateToken(username, userRoles);
 
         LoginResponseModel responseBody = new LoginResponseModel(userReadDto.getEmail(), accessToken, userRoles);
-        writeResponse(response, responseBody);
+        writeResponse(response, responseBody, 200);
     }
 
     @Override
@@ -77,15 +77,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("Error", "Authentication failed!");
-        if(failed instanceof UsernameNotFoundException){
-            errorResponse.put("Cause: ", "User not found!");
-        }
-        else if(failed instanceof BadCredentialsException){
-            errorResponse.put("Cause: ", "Incorrect password!");
-        }
-        errorResponse.put("Limit", "Max attempt: "+TokenConstants.MAX_LOGIN_ATTEMPTS_LIMIT);
-        writeResponse(response, errorResponse);
+        errorResponse.put("message", "Username or email wrong. Max failed attempt: "+TokenConstants.MAX_LOGIN_ATTEMPTS_LIMIT);
+        writeResponse(response, errorResponse, 400);
     }
 
     private void restrictedResponse(HttpServletResponse response) {
@@ -93,11 +86,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.setContentType("application/json");
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("Restricted", "Your account has been locked for "+TokenConstants.MAX_LOGIN_ATTEMPTS_LIMIT +" failed attempts.");
-        writeResponse(response, errorResponse);
+        writeResponse(response, errorResponse, 403);
     }
 
-    private void writeResponse(HttpServletResponse response, Object object){
-        response.setStatus(HttpServletResponse.SC_OK);
+    private void writeResponse(HttpServletResponse response, Object object, int statusCode){
+        response.setStatus(statusCode);
         response.setContentType("application/json");
         try{
             new ObjectMapper().writeValue(response.getWriter(), object);
