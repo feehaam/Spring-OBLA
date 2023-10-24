@@ -26,8 +26,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("https://obla.netlify.app/");
         config.addAllowedOrigin("http://obla.netlify.app/");
+        config.addAllowedOrigin("https://obla.netlify.app/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
