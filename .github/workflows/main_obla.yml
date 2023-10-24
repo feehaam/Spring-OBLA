@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +24,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
@@ -31,7 +32,7 @@ jobs:
           path: '${{ github.workspace }}\build\libs\*.jar'
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
