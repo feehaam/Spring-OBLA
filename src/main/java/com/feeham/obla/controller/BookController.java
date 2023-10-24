@@ -80,14 +80,28 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
     }
 
+    @GetMapping("/books/{bookId}")
+    public ResponseEntity<?> getById(@PathVariable Long bookId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
+            if (!roles.isEmpty()) {
+                String role = roles.get(0);
+                return ResponseEntity.ok(bookService.readById(bookId, role));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+    }
+
     /**
      * Deletes a book by its ID.
      *
      * @param bookId The ID of the book to delete.
      * @return A ResponseEntity with a success message.
      */
-    @DeleteMapping("/books/delete")
-    public ResponseEntity<?> getBookById(@RequestBody Long bookId) {
+    @DeleteMapping("/books/{bookId}/delete")
+    public ResponseEntity<?> getBookById(@PathVariable Long bookId) {
         bookService.delete(bookId);
         return ResponseEntity.ok("Book deleted successfully.");
     }

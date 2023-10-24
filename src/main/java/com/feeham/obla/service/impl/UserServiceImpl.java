@@ -217,6 +217,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             result.setBookId(borrow.getBook().getBookId());
             result.setBookTitle(borrow.getBook().getTitle());
             result.setDueDate(borrow.getDueDate());
+            result.setBookCover(borrow.getBook().getImgUrl());
             result.setReturnDate(borrow.getReturnDate());
             result.setBorrowDate(borrow.getBorrowDate());
             return result;

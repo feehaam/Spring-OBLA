@@ -16,6 +16,7 @@ import com.feeham.obla.validation.BookValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,20 +58,22 @@ public class BookServiceImpl implements BookService {
      * Retrieves a book by its ID for admin.
      *
      * @param bookId The ID of the book to retrieve.
+     * @param role
      * @return The DTO representing the book.
      * @throws ModelMappingException If there is an issue with model mapping.
      * @throws BookNotFoundException If the book is not found.
      */
     @Override
-    public BookReadDTOAdmin readById(Long bookId) throws ModelMappingException, BookNotFoundException {
+    public BookReadDTOCustomer readById(Long bookId, String role) throws ModelMappingException, BookNotFoundException {
         Optional<Book> bookOptional = bookRepository.findById(bookId);
         if (bookOptional.isEmpty()) {
             throw new BookNotFoundException("Book not found", "Get book by ID", "Book with ID " + bookId + " not found.");
         }
         Book book = bookOptional.get();
-        BookReadDTOAdmin bookReadDTO = modelMapper.map(book, BookReadDTOAdmin.class);
+        BookReadDTOCustomer bookReadDTO = modelMapper.map(book, BookReadDTOCustomer.class);
         if (book.getAvailability()) bookReadDTO.setStatus("Available");
         else bookReadDTO.setStatus("Taken");
+        if(book.getArchived() && role.equals("CUSTOMER")) throw new BookNotFoundException("Book not found", "Get book by ID", "Book with ID " + bookId + " not found.");
         return bookReadDTO;
     }
 
@@ -83,8 +86,10 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public List<?> readAll(String role) throws ModelMappingException {
-        if (role.contains(Roles.ADMIN.toString()))
-            return bookRepository.findAll().stream()
+        List<?> resultList;
+
+        if (role.contains(Roles.ADMIN.toString())) {
+            resultList = bookRepository.findAll().stream()
                     .map(book -> {
                         BookReadDTOAdmin result = modelMapper.map(book, BookReadDTOAdmin.class);
                         result.setStatus(book.getAvailability() ? "Available" : "Taken");
@@ -92,15 +97,22 @@ public class BookServiceImpl implements BookService {
                         return result;
                     })
                     .collect(Collectors.toList());
-        else return bookRepository.findAll().stream()
-                .filter(book -> !book.getArchived())
-                .map(book -> {
-                    BookReadDTOCustomer result = modelMapper.map(book, BookReadDTOCustomer.class);
-                    result.setStatus(book.getAvailability() ? "Available" : "Taken");
-                    return result;
-                })
-                .collect(Collectors.toList());
+        } else {
+            resultList = bookRepository.findAll().stream()
+                    .filter(book -> !book.getArchived())
+                    .map(book -> {
+                        BookReadDTOCustomer result = modelMapper.map(book, BookReadDTOCustomer.class);
+                        result.setStatus(book.getAvailability() ? "Available" : "Taken");
+                        return result;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // Reverse the resultList
+        Collections.reverse(resultList);
+        return resultList;
     }
+
 
     /**
      * Updates an existing book.
@@ -121,6 +133,7 @@ public class BookServiceImpl implements BookService {
         book.setTitle(bookUpdateDTO.getTitle());
         book.setDescription(bookUpdateDTO.getDescription());
         book.setImgUrl(bookUpdateDTO.getImgUrl());
+        book.setIsbn(bookUpdateDTO.getIsbn());
         bookRepository.save(book);
     }
 

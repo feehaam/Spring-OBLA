@@ -9,10 +9,10 @@ public class InvalidEntityException extends RuntimeException {
     private final String exception = "ValidationException";
     private final String operation;
     private final String message;
-    private final Object validation;
-    public InvalidEntityException(String entityName, String message, Object validattion) {
-        operation = "The entity '" + entityName + "' is invalid";
+    private final String validation;
+    public InvalidEntityException(String entityName, String message, String validation) {
+        this.operation = "The entity '" + entityName + "' is invalid";
         this.message = message;
-        this.validation = validattion;
+        this.validation = validation;
     }
 }

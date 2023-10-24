@@ -27,10 +27,12 @@ public class BorrowController {
      * @return A ResponseEntity with a success message.
      */
     @PostMapping("/books/{bookId}/borrow")
-    public ResponseEntity<?> borrowBook(@PathVariable Long bookId, @RequestBody LocalDate dueDate) {
+    public ResponseEntity<?> borrowBook(@PathVariable Long bookId) {
         // Get the user ID from the authentication token
         String userName = getUserNameFromToken();
-        borrowService.create(bookId, credentials.getUserId(), dueDate);
+        LocalDate date = LocalDate.now();
+        date = date.plusDays(7);
+        borrowService.create(bookId, credentials.getUserId(), date);
         return ResponseEntity.ok("Borrowed the book successfully.");
     }
 

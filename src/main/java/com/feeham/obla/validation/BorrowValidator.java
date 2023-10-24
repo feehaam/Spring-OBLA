@@ -60,10 +60,10 @@ public class BorrowValidator {
     }
 
     // Create a map containing validation data for reporting.
-    private Map<String, List<String>> createValidationData(List<String> violations) {
-        Map<String, List<String>> validationData = new HashMap<>();
-        validationData.put("Rules", RULES);  // List of validation rules.
-        validationData.put("Violated", violations);  // List of violated rules.
-        return validationData;
+    private String createValidationData(List<String> violations) {
+        StringBuilder problems = new StringBuilder();
+        if(violations.isEmpty()) return problems.toString();
+        for(String v: violations) problems.append(v).append(", ");
+        return problems.substring(0, problems.toString().length() - 2);
     }
 }

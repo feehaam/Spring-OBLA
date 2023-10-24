@@ -19,12 +19,12 @@ public class UserValidator {
     // Define a list of validation rules to explain the validation criteria.
     private static final List<String> RULES = new ArrayList<>();
     static {
-        RULES.add("- User ID must be non-negative");
-        RULES.add("- First name must be at least 2 characters long and no special characters are allowed except for space");
-        RULES.add("- Last name must be at least 4 characters long and no special characters are allowed except for space");
-        RULES.add("- The email field must be a valid email");
-        RULES.add("- Password must be at least 6 characters long");
-        RULES.add("- Role must be either ADMIN or CUSTOMER");
+        RULES.add("User ID must be non-negative");
+        RULES.add("First name must be at least 2 characters long and no special characters are allowed except for space");
+        RULES.add("Last name must be at least 4 characters long and no special characters are allowed except for space");
+        RULES.add("The email field must be a valid email");
+        RULES.add("Password must be at least 6 characters long");
+        RULES.add("Role must be either ADMIN or CUSTOMER");
     }
 
     private final PasswordEncoder passwordEncoder;
@@ -92,10 +92,10 @@ public class UserValidator {
     }
 
     // Create a map containing validation data for reporting.
-    private Map<String, List<String>> createValidationData(List<String> violations) {
-        Map<String, List<String>> validationData = new HashMap<>();
-        validationData.put("Rules", RULES);  // List of validation rules.
-        validationData.put("Violated", violations);  // List of violated rules.
-        return validationData;
+    private String createValidationData(List<String> violations) {
+        StringBuilder problems = new StringBuilder();
+        if(violations.isEmpty()) return problems.toString();
+        for(String v: violations) problems.append(v).append(", ");
+        return problems.substring(0, problems.toString().length() - 2);
     }
 }

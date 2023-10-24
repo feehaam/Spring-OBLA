@@ -1,33 +1,30 @@
 package com.feeham.obla.controller;
 
-import com.feeham.obla.model.auths.LoginRequestModel;
-import com.feeham.obla.model.auths.LoginResponseModel;
 import com.feeham.obla.model.userdto.UserCreateDTO;
+import com.feeham.obla.model.userdto.UserReadDTO;
 import com.feeham.obla.model.userdto.UserUpdateDTO;
+import com.feeham.obla.service.interfaces.UserCredentialsService;
 import com.feeham.obla.service.interfaces.UserService;
-import com.feeham.obla.utilities.token.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class UserController {
 
     private final UserService userService;
+    private UserCredentialsService credentials;
 
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserCredentialsService credentials) {
         this.userService = userService;
+        this.credentials = credentials;
     }
 
     /**
@@ -50,6 +47,11 @@ public class UserController {
         userCreateDTO.setRole("ADMIN");
         userService.create(userCreateDTO);
         return new ResponseEntity<>("Account successfully registered", HttpStatus.CREATED);
+    }
+
+    @GetMapping("/user/all")
+    public ResponseEntity<List<UserReadDTO>> getAllUser(){
+        return ResponseEntity.ok(userService.readAll());
     }
 
 //    /**
@@ -129,6 +131,9 @@ public class UserController {
      */
     @GetMapping("/users/{userId}/history")
     public ResponseEntity<?> getHistory(@PathVariable Long userId) {
+        if(userId == 0) {
+            userId = credentials.getUserId();
+        }
         return ResponseEntity.ok(userService.getHistory(userId));
     }
 

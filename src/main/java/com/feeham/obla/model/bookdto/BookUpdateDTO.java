@@ -10,6 +10,7 @@ import lombok.Setter;
 public class BookUpdateDTO {
     private Long bookId;
     private String title;
+    private String isbn;
     private String author;
     private String imgUrl;
     private String description;

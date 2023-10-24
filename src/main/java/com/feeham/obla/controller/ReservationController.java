@@ -5,6 +5,8 @@ import com.feeham.obla.service.interfaces.UserCredentialsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ReservationController {
 
@@ -38,5 +40,11 @@ public class ReservationController {
     public ResponseEntity<?> cancelBookReservation(@PathVariable Long bookId) {
         reservationService.cancel(credentials.getUserId(), bookId);
         return ResponseEntity.ok("Book reservation cancelled.");
+    }
+
+    @GetMapping("/reserves")
+    public ResponseEntity<?> getAllBorrows(){
+        Long userId = credentials.getUserId();
+        return ResponseEntity.ok(reservationService.getByUser(userId));
     }
 }

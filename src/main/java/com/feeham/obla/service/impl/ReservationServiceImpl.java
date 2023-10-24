@@ -5,6 +5,7 @@ import com.feeham.obla.entity.Borrow;
 import com.feeham.obla.entity.Reserve;
 import com.feeham.obla.entity.User;
 import com.feeham.obla.exception.*;
+import com.feeham.obla.model.reservedto.ReserveReadDTO;
 import com.feeham.obla.repository.BookRepository;
 import com.feeham.obla.repository.ReservationRepository;
 import com.feeham.obla.repository.UserRepository;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -50,12 +53,12 @@ public class ReservationServiceImpl implements ReservationService {
                         "Book with ID " + bookId + " is already reserved by user with ID " + userId);
             }
         }
-        for (Borrow borrow : book.getBorrows()) {
-            if (borrow.getUser().getUserId() == userId) {
-                throw new CustomException("BookReservationException", "Requesting reservation", "Book already borrowed",
-                        "The requested book " + book.getTitle() + " is already borrowed by the requested user " + borrow.getUser().getFirstName());
-            }
-        }
+//        for (Borrow borrow : book.getBorrows()) {
+//            if (borrow.getUser().getUserId() == userId) {
+//                throw new CustomException("BookReservationException", "Requesting reservation", "Book already borrowed",
+//                        "The requested book " + book.getTitle() + " is already borrowed by the requested user " + borrow.getUser().getFirstName());
+//            }
+//        }
         if (book.getAvailability()) {
             throw new CustomException("BookReservationException", "Requesting reservation", "Can not reserve an available book",
                     "Book with ID " + bookId + " is available and can be directly borrowed.");
@@ -95,5 +98,15 @@ public class ReservationServiceImpl implements ReservationService {
                         "The target book is not reserved by the user"));
 
         reservationRepository.deleteByBookIdAndUserId(bookId, userId);
+    }
+
+    @Override
+    public List<ReserveReadDTO> getByUser(Long userId) {
+        return reservationRepository.findAll().stream()
+                .filter(r -> r.getUserId() == userId)
+                .map(r -> {
+                    return new ReserveReadDTO(r.getId(), r.getReserveDateTime(), r.getBook().getBookId(), r.getBook().getTitle(), r.getBook().getImgUrl());
+                })
+                .collect(Collectors.toList());
     }
 }

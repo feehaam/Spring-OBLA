@@ -14,6 +14,7 @@ public class BorrowReadDTO {
     private Long borrowId;
     private Long bookId;
     private String bookTitle;
+    private String bookCover;
     private LocalDate borrowDate;
     private LocalDate dueDate;
     private LocalDate returnDate;

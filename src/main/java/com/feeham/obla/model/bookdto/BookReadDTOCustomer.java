@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class BookReadDTOCustomer {
+    private Long bookId;
     private String title;
     private String author;
     private String isbn;

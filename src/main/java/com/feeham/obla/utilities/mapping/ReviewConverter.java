@@ -16,6 +16,7 @@ public class ReviewConverter {
         result.setRating(review.getRating()); // Set rating.
         result.setComment(review.getComment()); // Set comment.
         result.setReviewTime(review.getReviewTime()); // Set review timestamp.
+        result.setUserEmail(review.getUser().getEmail());
 
         // Set the book title by accessing the associated Book entity.
         result.setBookTitle(review.getBook().getTitle());
